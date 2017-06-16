@@ -6,32 +6,33 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Server {
-	
+public class DatabaseManager {
+
 	Connection db;
 	Statement state;
 	PreparedStatement pState;
-	
-	Server(){
+
+	DatabaseManager() {
 		init();
 	}
-	
-	private void init(){
+
+	private void init() {
 		try {
-			db = DriverManager.getConnection("jdbc:mariadb://140.127.74.210/410477013","410477013","e853w");
+			db = DriverManager.getConnection("jdbc:mariadb://140.127.74.210/410477013", "410477013", "e853w");
 			state = db.createStatement();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	
-	public void addMovie(String title, String genres, int year, int price, String company, String url) throws SQLException {
+
+	public void addMovie(String title, String genres, int year, int price, String company, String url)
+			throws SQLException {
 		int mv_id = 0;
-		pState = db.prepareStatement("INSERT INTO `movie` "
-				+ "(`mv_id`, `title`, `genres`, `released_year`, `price`, `company`, `url`) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
+		pState = db.prepareStatement(
+				"INSERT INTO `movie` " + "(`mv_id`, `title`, `genres`, `released_year`, `price`, `company`, `url`) "
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?)");
 		pState.setInt(1, mv_id);
 		pState.setString(2, title);
 		pState.setString(3, genres);
@@ -41,8 +42,9 @@ public class Server {
 		pState.setString(7, url);
 		pState.execute();
 	}
-	
-	public void updateMovie(int mv_id, String title, String genres, int year, int price, String company, String url) throws SQLException {
+
+	public void updateMovie(int mv_id, String title, String genres, int year, int price, String company, String url)
+			throws SQLException {
 		ResultSet result = state.executeQuery("SELECT * FROM `movie` WHERE `mv_id` = 0 ");
 		result.next();
 		if (mv_id == -1)
@@ -59,7 +61,7 @@ public class Server {
 			company = result.getString("company");
 		if (url == null)
 			url = result.getString("url");
-			
+
 		pState = db.prepareStatement("UPDATE `movie` "
 				+ "SET `title` = ?, `genres` = ?, `released_year` = ?, `price` = ?, `company` = ?, `url` = ? "
 				+ "WHERE `movie`.`mv_id` = ? ");
@@ -72,24 +74,21 @@ public class Server {
 		pState.setInt(7, mv_id);
 		pState.execute();
 	}
-	
+
 	public void removeMovie(int mv_id) throws SQLException {
-		pState = db.prepareStatement("DELETE FROM `movie` "
-				+ "WHERE mv_id = ?");
+		pState = db.prepareStatement("DELETE FROM `movie` " + "WHERE mv_id = ?");
 		pState.setInt(1, mv_id);
 		pState.execute();
 	}
-	
+
 	public int getDownloads(int mv_id) throws SQLException {
-		pState = db.prepareStatement("SELECT COUNT(`b_id`) "
-				+ "FROM `bill` natural join `movie` "
-				+ "WHERE `mv_id` = ? ");
+		pState = db
+				.prepareStatement("SELECT COUNT(`b_id`) " + "FROM `bill` natural join `movie` " + "WHERE `mv_id` = ? ");
 		pState.setInt(1, mv_id);
 		ResultSet result = pState.executeQuery();
 		result.next();
 		int i = result.getInt(1);
 		return i;
 	}
-	
-	
+
 }

@@ -14,6 +14,7 @@ public class dem {
 		try {
 			Connection db = DriverManager.getConnection("jdbc:mariadb://140.127.74.210/410477013","410477013","e853w");
 			Statement state = db.createStatement();
+			@SuppressWarnings("unused")
 			PreparedStatement pState = db.prepareStatement(null);
 			//  = db.prepareStatement(null);
 			int i = state.executeUpdate("create table actor"
